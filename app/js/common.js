@@ -15,7 +15,7 @@ var model = {
     },
     drawCircle: function(circleX, circleY) {
         rand = Math.floor(Math.random() * colors.length); //генерим рандомное число(в промежутке от 0 до количества цветов в массиве цветов)
-        var radius = 30; //радиус круга
+        var radius = 60; //радиус круга
        
        
         var circle = new PIXI.Graphics(); //создаем новый графический элемент
@@ -47,18 +47,25 @@ var model = {
     }
 }
 var firstplayer = {
-    createplayer: function() {    
+    createPlayer: function() {    
       player = model.drawCircle(70, height/2);
-      player.mouseover = function(Data){
-        console.log(Data);
-      }; 
+      player.mousemove = function(mouseData){
+        player.position.x = mouseData.data.originalEvent.x-70;
+        player.position.y = mouseData.data.originalEvent.y-height/2;
+         }
+    
+    }
+}
+var ball = {
+    createBall: function() {
+      ball = model.drawCircle(300, 300);
     }
 }
 var view = {
     loadGame: function() {
         model.createCanvas();
-        firstplayer.createplayer();
-        
+        firstplayer.createPlayer();
+        ball.createBall();
         //setInterval(model.drawCircle, 500);
 
         app.ticker.add(function() { //постоянное обновление холста
