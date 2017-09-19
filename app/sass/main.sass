@@ -30,162 +30,26 @@ html, body
 
 body
 	font-size: 16px
+	width: 100%
 	min-width: 320px
 	position: relative
 	line-height: 1.75
 	font-family: $default-font
 	overflow-x: hidden
 	opacity: 1
+	height: 0px
 
-.img-responsive
-	background-repeat: no-repeat
-	background-position: center
-	background-size: cover
-	width: 100%
-	height: 91vh
 
-#top-background-carousel
-	.owl-nav
- 		height: 9vh
-	 	font-size: 32px
-	 	padding: 16px 10%
-	.owl-prev
-		float: left
-	.owl-next
-		float: right
 
-.float-right
-	float: right
-
-.opacity-background
-	width: 100%
-	height: 100%
-	background: rgba(16, 58, 255, 0.25)
-
-.top-section
+canvas
 	position: absolute
-	top: 0px
-	left: 0px
-	width: 100%
-	z-index: 10
-	.top-contact
-		height: 55px
-	ul
-		margin: 5px 0
-		padding: 0px
-		li
-			list-style-type: none
-			display: inline-block
-			margin: 0px 10px
-			color: white
-			font-size: 16px
-			a
-				color: white
-			&:nth-child(2n)
-				color: #49E98C
-	.social-icons
-		li
-			margin: 0px 4px
-	header
-		height: 100px
-		background: #F0F2F5
-		box-shadow: 0px 17px 21px #103AFF
-		padding-top: 30px
-		nav
-			ul
-				display: flex
-				justify-content: space-between
-				text-transform: uppercase
-				a
-					color: #103AFF
-				li:last-child
-					background: #49E98C
-					padding: 6px 32px
-					margin-top: -6px
-					border-radius: 30px
-					a
-						color: white
-	.welcome-block
-		.title
-			font-size: 60px
-			line-height: 68px
-			text-align: center
-			color: #F2F2F2
-			text-transform: uppercase
-			margin-top: 22vh
-			letter-spacing: 30px
-			font-weight: bold
-		form
-			.wraper-input
-				display: flex
-				justify-content: space-around
-			input
-				background: rgba(16, 58, 255, 0.5)
-				border: 2px solid rgba(73, 233, 140, 0.5)
-				width: 215px
-				height: 49px
-				padding: 19px
-				border-radius: 30px
-				color: white
-				&::placeholder
-					color: white
-			button
-				display: block
-				margin: 7vh auto
-				width: 244px
-				height: 52px
-				border-radius: 30px
-				background: #49E98C
-				border: none
-				text-transform: uppercase
-				color: white
-
-.tickets-name
-	height: 210px
-	width: 278px
-	border-bottom: 2px solid #E0E0E0
-
-.name-page
-	position: absolute
-	top: 18vh
-	left: 15%
-	font-size: 14px
-	color: #103AFF
-	.vertical-text
-		transform: rotate(270deg)
-		position: absolute
-		top: -58px
-		left: -34px
-		font-size: 18px
-		color: #BDBDBD
-		text-transform: uppercase
-	
-		
-
-
-.services-section 
-	box-shadow: inset 0px 14px 20px 0px rgba(16, 58, 255, 0.2);
-	.color-blocks
-		div
-			margin-bottom: 50px
-			height: 240px
-			&:nth-child(1) .item
-				background: #103AFF
-				height: 330px
-				margin-top: -90px
-			&:nth-child(2) .item
-				border: 4px solid #49E98C
-			&:nth-child(3) .item
-				border: 4px solid #BA9CFF
-			&:nth-child(4) .item
-				border: 4px solid #7D9BF2
-			&:nth-child(5) .item
-				border: 4px solid #FF4C61
-				height: 330px
-			&:nth-child(6) .item
-				border: 4px solid #F2C94C
-
-
+	display: block
+	z-index: -9999
+	image-rendering: optimizeSpeed
+	image-rendering: -moz-crisp-edges
+	image-rendering: -webkit-optimize-contrast
+	image-rendering: optimize-contrast
+	-ms-interpolation-mode: nearest-neighbor
 
 
 @import "media" // Всегда в конце
