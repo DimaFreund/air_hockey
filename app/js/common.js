@@ -92,7 +92,7 @@ var ball = {
       return distans;
       
     }
-}
+} 
 var vall = {
     checkAboard: function(x, y) {
       x += startBallX + radius;
@@ -123,5 +123,7 @@ var controller = {
 
     } 
 }
+
+//sdfsdfdsfsdf
 
 view.loadGame();
