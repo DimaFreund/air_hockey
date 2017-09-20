@@ -5,9 +5,12 @@ var colors = [0x111111]; //массив цветов
 var gravity = 4;
 var figuresAmount = -1; //количество созданных фигур
 var figure = []; //массив хранящий нашу фигуру
-
-
-
+var startBallX = 300;
+var startBallY = 300;
+var curentPosX = 0;
+var curentPosY = 0;
+var radius = 60;
+var agree = -30;
 var model = {
     createCanvas: function() {
         app = new PIXI.Application(width, height); //создае холст
@@ -15,7 +18,7 @@ var model = {
     },
     drawCircle: function(circleX, circleY) {
         rand = Math.floor(Math.random() * colors.length); //генерим рандомное число(в промежутке от 0 до количества цветов в массиве цветов)
-        var radius = 60; //радиус круга
+         //радиус круга
        
        
         var circle = new PIXI.Graphics(); //создаем новый графический элемент
@@ -48,17 +51,56 @@ var model = {
 }
 var firstplayer = {
     createPlayer: function() {    
-      player = model.drawCircle(70, height/2);
+      player = model.drawCircle(0, 0);
       player.mousemove = function(mouseData){
-        player.position.x = mouseData.data.originalEvent.x-70;
-        player.position.y = mouseData.data.originalEvent.y-height/2;
+        player.position.x = mouseData.data.originalEvent.x;
+        player.position.y = mouseData.data.originalEvent.y;
+
+        if(ball.radiusArea(player.position.x, player.position.y) < radius*2){
+          alert();
          }
+
+        }
+
     
     }
+
 }
 var ball = {
+
     createBall: function() {
-      ball = model.drawCircle(300, 300);
+        balls = model.drawCircle(startBallX, startBallY);
+        
+        
+    },
+    moveBall: function(moveX,moveY) {
+        
+        balls.position.x += moveX;
+        balls.position.y += moveY;
+        vall.checkAboard(balls.position.x, balls.position.y);
+          
+    },
+    positionBall: function(cut, speed){
+        curentPosX = Math.cos(Math.PI*cut/180)*speed;
+        curentPosY = Math.cos(Math.PI*(90-cut)/180)*speed;
+        ball.moveBall(curentPosX, curentPosY);
+    },
+    radiusArea: function(PlayerX, PlayerY) {
+      var x = Math.abs(PlayerX-balls.position.x-startBallX);
+      var y = Math.abs(PlayerY-balls.position.y-startBallY);
+      var distans = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+      return distans;
+      
+    }
+}
+var vall = {
+    checkAboard: function(x, y) {
+      x += startBallX + radius;
+      y += startBallY + radius;
+      if(x > width || x < radius*2)
+        agree += (180-2*agree); 
+      if(y > height || y < radius*2)
+        agree -= (2*agree); 
     }
 }
 var view = {
@@ -66,17 +108,9 @@ var view = {
         model.createCanvas();
         firstplayer.createPlayer();
         ball.createBall();
-        //setInterval(model.drawCircle, 500);
 
         app.ticker.add(function() { //постоянное обновление холста
-            for (var i = 0; i < figuresAmount; i++) {
-                figure[i].position.y += gravity; //заставляем гравитацию работать
-                if (figure[i].position.y > height && figure[i].live == true) {
-                    model.gameOver();
-                    return false;
-                }
-
-            }
+            ball.positionBall(agree, 2);
         });
     }
 }
