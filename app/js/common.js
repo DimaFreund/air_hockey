@@ -1,7 +1,7 @@
 var width = window.innerWidth; //получаем ширину экрана
 var height = window.innerHeight; // получаем высоту экрана
 var app; //создаем глобальную переменную нашей игры
-var colors = [0x111111]; //массив цветов
+var colors = [0x000011]; //массив цветов
 var gravity = 4;
 var figuresAmount = -1; //количество созданных фигур
 var figure = []; //массив хранящий нашу фигуру
@@ -11,6 +11,10 @@ var curentPosX = 0;
 var curentPosY = 0;
 var radius = 60;
 var agree = -30;
+var mouselastX = 0;
+var mouselastY = 0;
+var speed = 1;
+var lastspeed;
 var model = {
     createCanvas: function() {
         app = new PIXI.Application(width, height); //создае холст
@@ -55,16 +59,16 @@ var firstplayer = {
       player.mousemove = function(mouseData){
         player.position.x = mouseData.data.originalEvent.x;
         player.position.y = mouseData.data.originalEvent.y;
-
-        if(ball.radiusArea(player.position.x, player.position.y) < radius*2){
-          alert();
-         }
-
-        }
-
-    
+        firstplayer.speed(mouseData.data.originalEvent.x, mouseData.data.originalEvent.y);
+        }    
+    },
+    speed: function(curentX, curentY) {
+      
+        lastspeed =  Math.sqrt(Math.pow(Math.abs(curentX-mouselastX), 2) + Math.pow(Math.abs(curentY-mouselastY), 2));
+        
+        mouselastX = curentX;
+        mouselastY = curentY;
     }
-
 }
 var ball = {
 
@@ -74,10 +78,17 @@ var ball = {
         
     },
     moveBall: function(moveX,moveY) {
-        
+        var flag = false;
         balls.position.x += moveX;
         balls.position.y += moveY;
         vall.checkAboard(balls.position.x, balls.position.y);
+         if(ball.radiusArea(player.position.x, player.position.y) < radius*2 && (flag == false)){
+          ball.contactBall();
+          flag = true;
+         };
+         if (ball.radiusArea(player.position.x, player.position.y) > radius*2 ) {
+          flag = false;
+         }
           
     },
     positionBall: function(cut, speed){
@@ -91,6 +102,15 @@ var ball = {
       var distans = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
       return distans;
       
+    },
+    contactBall: function() {
+      var x = player.position.x - balls.position.x - startBallX;
+      var y = player.position.y - balls.position.y - startBallY;
+      cutline = Math.atan(y/x);
+      changecut = cutline*180/Math.PI+90;
+      console.log(cutline*180/Math.PI+90);
+      agree -= changecut;
+      speed = lastspeed;
     }
 } 
 var vall = {
@@ -110,7 +130,8 @@ var view = {
         ball.createBall();
 
         app.ticker.add(function() { //постоянное обновление холста
-            ball.positionBall(agree, 2);
+            ball.positionBall(agree, speed);
+
         });
     }
 }
