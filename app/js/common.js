@@ -15,6 +15,31 @@ var mouselastX = 0;
 var mouselastY = 0;
 var speed = 1;
 var lastspeed;
+
+
+function plusVector(vec1, vec2){
+  return [vec1[0]+vec2[0], vec1[1]+vec2[1]];
+}
+
+function minusVector(vec1, vec2){
+  return [vec1[0]-vec2[0], vec1[1]-vec2[1]];
+}
+
+function lengthVector(vec){
+  return Math.sqrt(Math.pow(vec[0],2)+Math.pow(vec[1],2));
+}
+function distanceTwoVector(vec1, vec2){
+  return lengthVector(minusVector(vec1, vec2));
+}
+function multiplexVector(vec1, vec2){
+  return vec1[0]*vec2[0]+vec1[1]*vec2[1];
+}
+function multiplexVectorConstant(vec, constant){
+  return [vec[0]*constant, vec[1]*constant];
+}
+function angleReflextion(vec, normal){
+  return minusVector(vec, multiplexVectorConstant(multiplexVectorConstant(normal, multiplexVector(vec, normal)/multiplexVector(normal,normal)),2));
+}
 var model = {
     createCanvas: function() {
         app = new PIXI.Application(width, height); //создае холст
@@ -78,17 +103,13 @@ var ball = {
         
     },
     moveBall: function(moveX,moveY) {
-        var flag = false;
         balls.position.x += moveX;
         balls.position.y += moveY;
         vall.checkAboard(balls.position.x, balls.position.y);
-         if(ball.radiusArea(player.position.x, player.position.y) < radius*2 && (flag == false)){
+         if(ball.radiusArea(player.position.x, player.position.y) < radius*2){
           ball.contactBall();
-          flag = true;
          };
-         if (ball.radiusArea(player.position.x, player.position.y) > radius*2 ) {
-          flag = false;
-         }
+         
           
     },
     positionBall: function(cut, speed){
@@ -101,15 +122,17 @@ var ball = {
       var y = Math.abs(PlayerY-balls.position.y-startBallY);
       var distans = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
       return distans;
-      
     },
     contactBall: function() {
       var x = player.position.x - balls.position.x - startBallX;
       var y = player.position.y - balls.position.y - startBallY;
       cutline = Math.atan(y/x);
-      changecut = cutline*180/Math.PI+90;
-      console.log(cutline*180/Math.PI+90);
-      agree -= changecut;
+      changecut = cutline*180/Math.PI;
+      console.log(cutline*180/Math.PI);
+      if (y >= 0)
+        agree += changecut;
+      if (y < 0)
+        agree += changecut+180;
       speed = lastspeed;
     }
 } 
@@ -130,7 +153,7 @@ var view = {
         ball.createBall();
 
         app.ticker.add(function() { //постоянное обновление холста
-            ball.positionBall(agree, speed);
+            ball.positionBall(agree, 0);
 
         });
     }
