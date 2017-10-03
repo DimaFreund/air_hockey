@@ -10,7 +10,6 @@ var agree = -30;
 var mouselastX = 0;
 var mouselastY = 0;
 var speed = 1;
-var lastspeed;
 
 
 function plusVector(vec1, vec2){
@@ -42,6 +41,9 @@ function return90Vector(vec){
 function return180Vector(vec){
   return multiplexVectorConstant(vec, -1);
 }
+// function plusVectorAbs(vec1, vec2){
+//   var mask = []
+// }
 var model = {
     createCanvas: function() {
         app = new PIXI.Application(vall.width, vall.height); //создае холст
@@ -82,57 +84,57 @@ var model = {
 var firstplayer = {
     mousePosition: [0, 0],
     lastPosition: [0, 0],
-    lastSpeedValue: 0,
-    acceleration: 0,
+    lastSpeedValue: [0, 0],
     createPlayer: function() {    
       player = model.drawCircle(0, 0);
       player.mousemove = function(mouseData){
-        this.mousePosition = [mouseData.data.originalEvent.x, mouseData.data.originalEvent.y]
-        player.position.x = this.mousePosition[0];
-        player.position.y = this.mousePosition[1];
-        this.lastspeed();
+        firstplayer.mousePosition = [mouseData.data.originalEvent.x, mouseData.data.originalEvent.y];
+        player.position.x = firstplayer.mousePosition[0];
+        player.position.y = firstplayer.mousePosition[1];
+        firstplayer.lastspeed();
         }    
     },
     lastspeed: function() {
-      this.acceleration = this.lastSpeedValue;
-      this.lastSpeedValue = distanceTwoVector(this.lastPosition, this.mousePosition);
-      this.lastPosition = [mouseData.data.originalEvent.x, mouseData.data.originalEvent.y];
-      this.lastacceleration();
-    },
-    lastacceleration: function(){
-      this.acceleration = this.lastSpeedValue - this.acceleration;
+      this.lastSpeedValue = minusVector(this.lastPosition, this.mousePosition);
+      this.lastPosition = this.mousePosition;
+      console.log(this.lastSpeedValue);
     }
 }
+
 var ball = {
     radius: 60,
     position: [200, 200],
-    speed: [1, 1],
-    acceleration: [0, 0],
+    speed: [11, 11],
+    acceleration: 0.999,
     createBall: function() {
         balls = model.drawCircle([0,0]);      
     },
     positionvector: function(){
+        this.speedvector();
         this.position = plusVector(this.position, this.speed);
         balls.position.x = this.position[0];
         balls.position.y = this.position[1];  
     },
     speedvector: function(){
-        this.speed = plusVector(this.speed, this.acceleration);
-    },
-    acceleration: function(vec){
-        this.acceleration = vec;
+        this.speed = multiplexVectorConstant(this.speed, this.acceleration);
     },
     move: function(){
       var checkVall = vall.checkAboard(this.position);
       var checkPlayer = distanceTwoVector(this.position, firstplayer.mousePosition);
-      console.log(checkPlayer);
       if (checkVall)
         this.speed = angleReflextion(this.speed, checkVall);
-      if (checkPlayer<this.radius*2)
-        alert();
+      if (checkPlayer<this.radius*2){
+        this.speed = angleReflextion(this.speed, minusVector(ball.position, firstplayer.mousePosition));
+        this.speed = plusVector(this.speed, firstplayer.lastSpeedValue);
+      }
 
+      
+      checkPlayer = distanceTwoVector(this.position, firstplayer.mousePosition);
+      while(checkPlayer<this.radius*2){
+        checkPlayer = distanceTwoVector(this.position, firstplayer.mousePosition);
+        this.positionvector();
+      }
       ball.positionvector();
-
     }
     
 } 
@@ -175,6 +177,5 @@ var controller = {
     } 
 }
 
-//sdfsdfdsfsdf
 
 view.loadGame();
