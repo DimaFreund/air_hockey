@@ -1,7 +1,4 @@
-var width = window.innerWidth; //получаем ширину экрана
-var height = window.innerHeight; // получаем высоту экрана
 var app; //создаем глобальную переменную нашей игры
-var colors = [0x000011]; //массив цветов
 var gravity = 4;
 var figuresAmount = -1; //количество созданных фигур
 var figure = []; //массив хранящий нашу фигуру
@@ -9,7 +6,6 @@ var startBallX = 300;
 var startBallY = 300;
 var curentPosX = 0;
 var curentPosY = 0;
-var radius = 60;
 var agree = -30;
 var mouselastX = 0;
 var mouselastY = 0;
@@ -40,20 +36,25 @@ function multiplexVectorConstant(vec, constant){
 function angleReflextion(vec, normal){
   return minusVector(vec, multiplexVectorConstant(multiplexVectorConstant(normal, multiplexVector(vec, normal)/multiplexVector(normal,normal)),2));
 }
+function return90Vector(vec){
+  return [-vec[1], vec[0]];
+}
+function return180Vector(vec){
+  return multiplexVectorConstant(vec, -1);
+}
 var model = {
     createCanvas: function() {
-        app = new PIXI.Application(width, height); //создае холст
+        app = new PIXI.Application(vall.width, vall.height); //создае холст
         document.body.appendChild(app.view); //выводим его в тело страницы
     },
-    drawCircle: function(circleX, circleY) {
-        rand = Math.floor(Math.random() * colors.length); //генерим рандомное число(в промежутке от 0 до количества цветов в массиве цветов)
-         //радиус круга
+    drawCircle: function(vec) {
+     
        
        
         var circle = new PIXI.Graphics(); //создаем новый графический элемент
         circle.lineStyle(0); //начинаем рисовать
-        circle.beginFill(colors[rand], 1); //задаем рандомный цвет
-        circle.drawCircle(circleX, circleY, radius); //рисуем кружок, ведь он наш дружок
+        circle.beginFill(0x000011, 1); //задаем рандомный цвет
+        circle.drawCircle(vec[0], vec[1], ball.radius); //рисуем кружок, ведь он наш дружок
         circle.endFill(); //закончили отрисовку
         circle.interactive = true; //делаем круг интерактивным
         circle.buttonMode = true; //меняем курсор при наведении
@@ -79,71 +80,77 @@ var model = {
     }
 }
 var firstplayer = {
+    mousePosition: [0, 0],
+    lastPosition: [0, 0],
+    lastSpeedValue: 0,
+    acceleration: 0,
     createPlayer: function() {    
       player = model.drawCircle(0, 0);
       player.mousemove = function(mouseData){
-        player.position.x = mouseData.data.originalEvent.x;
-        player.position.y = mouseData.data.originalEvent.y;
-        firstplayer.speed(mouseData.data.originalEvent.x, mouseData.data.originalEvent.y);
+        this.mousePosition = [mouseData.data.originalEvent.x, mouseData.data.originalEvent.y]
+        player.position.x = this.mousePosition[0];
+        player.position.y = this.mousePosition[1];
+        this.lastspeed();
         }    
     },
-    speed: function(curentX, curentY) {
-      
-        lastspeed =  Math.sqrt(Math.pow(Math.abs(curentX-mouselastX), 2) + Math.pow(Math.abs(curentY-mouselastY), 2));
-        
-        mouselastX = curentX;
-        mouselastY = curentY;
+    lastspeed: function() {
+      this.acceleration = this.lastSpeedValue;
+      this.lastSpeedValue = distanceTwoVector(this.lastPosition, this.mousePosition);
+      this.lastPosition = [mouseData.data.originalEvent.x, mouseData.data.originalEvent.y];
+      this.lastacceleration();
+    },
+    lastacceleration: function(){
+      this.acceleration = this.lastSpeedValue - this.acceleration;
     }
 }
 var ball = {
-
+    radius: 60,
+    position: [200, 200],
+    speed: [1, 1],
+    acceleration: [0, 0],
     createBall: function() {
-        balls = model.drawCircle(startBallX, startBallY);
-        
-        
+        balls = model.drawCircle([0,0]);      
     },
-    moveBall: function(moveX,moveY) {
-        balls.position.x += moveX;
-        balls.position.y += moveY;
-        vall.checkAboard(balls.position.x, balls.position.y);
-         if(ball.radiusArea(player.position.x, player.position.y) < radius*2){
-          ball.contactBall();
-         };
-         
-          
+    positionvector: function(){
+        this.position = plusVector(this.position, this.speed);
+        balls.position.x = this.position[0];
+        balls.position.y = this.position[1];  
     },
-    positionBall: function(cut, speed){
-        curentPosX = Math.cos(Math.PI*cut/180)*speed;
-        curentPosY = Math.cos(Math.PI*(90-cut)/180)*speed;
-        ball.moveBall(curentPosX, curentPosY);
+    speedvector: function(){
+        this.speed = plusVector(this.speed, this.acceleration);
     },
-    radiusArea: function(PlayerX, PlayerY) {
-      var x = Math.abs(PlayerX-balls.position.x-startBallX);
-      var y = Math.abs(PlayerY-balls.position.y-startBallY);
-      var distans = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-      return distans;
+    acceleration: function(vec){
+        this.acceleration = vec;
     },
-    contactBall: function() {
-      var x = player.position.x - balls.position.x - startBallX;
-      var y = player.position.y - balls.position.y - startBallY;
-      cutline = Math.atan(y/x);
-      changecut = cutline*180/Math.PI;
-      console.log(cutline*180/Math.PI);
-      if (y >= 0)
-        agree += changecut;
-      if (y < 0)
-        agree += changecut+180;
-      speed = lastspeed;
+    move: function(){
+      var checkVall = vall.checkAboard(this.position);
+      var checkPlayer = distanceTwoVector(this.position, firstplayer.mousePosition);
+      console.log(checkPlayer);
+      if (checkVall)
+        this.speed = angleReflextion(this.speed, checkVall);
+      if (checkPlayer<this.radius*2)
+        alert();
+
+      ball.positionvector();
+
     }
+    
 } 
+
+
+
 var vall = {
-    checkAboard: function(x, y) {
-      x += startBallX + radius;
-      y += startBallY + radius;
-      if(x > width || x < radius*2)
-        agree += (180-2*agree); 
-      if(y > height || y < radius*2)
-        agree -= (2*agree); 
+      width: window.innerWidth,
+      height: window.innerHeight,
+    checkAboard: function(vec) {
+      if(vec[0] + ball.radius > this.width)
+        return [this.width, 0];
+      if(vec[0] < ball.radius)
+        return [-this.width, 0];
+      if(vec[1] + ball.radius > this.height)
+        return [0, this.height];
+      if(vec[1] < ball.radius)
+        return [0, -this.height];
     }
 }
 var view = {
@@ -153,7 +160,7 @@ var view = {
         ball.createBall();
 
         app.ticker.add(function() { //постоянное обновление холста
-            ball.positionBall(agree, 0);
+            ball.move();
 
         });
     }
